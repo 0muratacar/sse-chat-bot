@@ -1,5 +1,6 @@
 import express from 'express';
 import { loggingMiddleware, errorHandlerMiddleware } from './middlewares';
+import routes from './routes';
 
 const app = express();
 
@@ -14,7 +15,8 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// API routes will be registered here in next commits
+// API routes
+app.use('/api', routes);
 
 // Error handler (must be last)
 app.use(errorHandlerMiddleware);
