@@ -31,4 +31,8 @@ export class ChatService {
 
     return { chat, messages, fullHistory };
   }
+
+  async createChat(title: string, userId: string) {
+    return this.chatRepository.create(title, userId);
+  }
 }

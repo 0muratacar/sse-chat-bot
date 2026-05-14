@@ -1,5 +1,5 @@
 import { RouteDefinition } from './route.types';
-import { chatIdParamsSchema, completionBodySchema } from '../middlewares/schemas';
+import { chatIdParamsSchema, completionBodySchema, createChatSchema } from '../middlewares/schemas';
 
 export const chatRoutes: RouteDefinition[] = [
   {
@@ -9,6 +9,17 @@ export const chatRoutes: RouteDefinition[] = [
     config: {
       description: 'Get paginated chat list for authenticated user',
       middlewares: ['appCheck', 'auth', 'clientType'],
+      tags: ['chat'],
+    },
+  },
+  {
+    path: '/',
+    method: 'post',
+    controller: 'chatController.createChat',
+    config: {
+      description: 'Create a new chat',
+      middlewares: ['appCheck', 'auth', 'clientType'],
+      validation: { body: createChatSchema },
       tags: ['chat'],
     },
   },

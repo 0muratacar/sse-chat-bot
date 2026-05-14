@@ -5,6 +5,8 @@ import { appCheckMiddleware, authMiddleware, adminMiddleware, clientTypeMiddlewa
 import { ChatController } from '../controllers/chat.controller';
 import { CompletionController } from '../controllers/completion.controller';
 import { AdminController } from '../controllers/admin.controller';
+import { AuthController } from '../controllers/auth.controller';
+import { UserController } from '../controllers/user.controller';
 import { AuthenticatedRequest } from '../types';
 
 const middlewareMap: Record<string, any> = {
@@ -18,6 +20,8 @@ const controllerMap: Record<string, () => any> = {
   chatController: () => container.resolve(ChatController),
   adminController: () => container.resolve(AdminController),
   completionController: () => container.resolve(CompletionController),
+  authController: () => container.resolve(AuthController),
+  userController: () => container.resolve(UserController),
 };
 
 export function registerRoutes(router: Router, routes: RouteDefinition[]): void {

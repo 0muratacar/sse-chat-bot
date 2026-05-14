@@ -18,3 +18,12 @@ export const updateFlagSchema = z.object({
 export const chatIdParamsSchema = z.object({
   chatId: z.string().uuid('Invalid chat ID format'),
 });
+
+export const loginSchema = z.object({
+  email: z.string().email('Invalid email format'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+export const createChatSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(200, 'Title must be at most 200 characters'),
+});

@@ -53,4 +53,8 @@ export class ChatRepository {
   async findByIdAndUserId(chatId: string, userId: string): Promise<Chat | null> {
     return this.prisma.chat.findFirst({ where: { id: chatId, userId } });
   }
+
+  async create(title: string, userId: string): Promise<Chat> {
+    return this.prisma.chat.create({ data: { title, userId } });
+  }
 }

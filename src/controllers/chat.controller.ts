@@ -15,6 +15,14 @@ export class ChatController {
     res.json({ data: result.data, pagination: result.pagination });
   }
 
+  async createChat(req: AuthenticatedRequest, res: Response): Promise<void> {
+    const userId = req.user!.id;
+    const { title } = req.body;
+
+    const chat = await this.chatService.createChat(title, userId);
+    res.status(201).json({ data: chat });
+  }
+
   async getChatHistory(req: AuthenticatedRequest, res: Response): Promise<void> {
     const userId = req.user!.id;
     const chatId = req.params.chatId as string;

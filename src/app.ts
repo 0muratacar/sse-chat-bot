@@ -1,6 +1,7 @@
 import express from 'express';
 import { loggingMiddleware, errorHandlerMiddleware } from './middlewares';
 import routes from './routes';
+import { swaggerSpec } from './config/swagger';
 
 const app = express();
 
@@ -13,6 +14,20 @@ app.use(loggingMiddleware);
 // Health check (no auth required)
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// OpenAPI spec + Scalar docs UI
+app.get('/docs.json', (_req, res) => { res.json(swaggerSpec); });
+app.get('/docs', (_req, res) => {
+  res.setHeader('Content-Type', 'text/html');
+  res.send(`<!doctype html>
+<html>
+<head><title>SSE Chat Bot API</title><meta charset="utf-8"/></head>
+<body>
+  <script id="api-reference" data-url="/docs.json"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+</body>
+</html>`);
 });
 
 // API routes
