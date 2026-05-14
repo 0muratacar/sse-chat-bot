@@ -1,9 +1,15 @@
 import { Request } from 'express';
 
+export enum Role {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+}
+
 export interface AuthenticatedRequest extends Request {
   user?: {
     id: string;
     email: string;
+    role: Role;
   };
   clientType?: 'web' | 'mobile' | 'desktop';
 }

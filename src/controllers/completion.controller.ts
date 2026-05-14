@@ -1,7 +1,9 @@
+import { injectable } from 'tsyringe';
 import { Response } from 'express';
 import { CompletionService } from '../services/completion.service';
 import { AuthenticatedRequest } from '../types';
 
+@injectable()
 export class CompletionController {
   constructor(private completionService: CompletionService) {}
 

@@ -9,6 +9,17 @@ async function main() {
     create: {
       email: 'demo@appnation.com',
       name: 'Demo User',
+      role: 'USER',
+    },
+  });
+
+  const admin = await prisma.user.upsert({
+    where: { email: 'admin@appnation.com' },
+    update: {},
+    create: {
+      email: 'admin@appnation.com',
+      name: 'Admin User',
+      role: 'ADMIN',
     },
   });
 
@@ -65,7 +76,7 @@ async function main() {
     skipDuplicates: true,
   });
 
-  console.log('Seed completed:', { user: user.id, chats: [chat1.id, chat2.id, chat3.id] });
+  console.log('Seed completed:', { user: user.id, admin: admin.id, chats: [chat1.id, chat2.id, chat3.id] });
 }
 
 main()

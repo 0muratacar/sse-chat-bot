@@ -1,7 +1,9 @@
+import { injectable } from 'tsyringe';
 import { Request, Response } from 'express';
 import { FeatureFlagService } from '../services/feature-flag.service';
 import logger from '../utils/logger';
 
+@injectable()
 export class AdminController {
   constructor(private featureFlagService: FeatureFlagService) {}
 

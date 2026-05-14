@@ -1,7 +1,9 @@
+import { injectable } from 'tsyringe';
 import { Response } from 'express';
 import { ChatService } from '../services/chat.service';
 import { AuthenticatedRequest } from '../types';
 
+@injectable()
 export class ChatController {
   constructor(private chatService: ChatService) {}
 

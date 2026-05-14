@@ -2,7 +2,7 @@ import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import config from '../config';
 import logger from '../utils/logger';
-import { AuthenticatedRequest } from '../types';
+import { AuthenticatedRequest, Role } from '../types';
 
 export function authMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
   const authHeader = req.headers.authorization;
@@ -17,8 +17,8 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
   const token = authHeader.split(' ')[1];
 
   try {
-    const payload = jwt.verify(token, config.get('jwtSecret')) as { id: string; email: string };
-    req.user = { id: payload.id, email: payload.email };
+    const payload = jwt.verify(token, config.get('jwtSecret')) as { id: string; email: string; role: Role };
+    req.user = { id: payload.id, email: payload.email, role: payload.role || Role.USER };
     next();
   } catch (err) {
     logger.warn('JWT verification failed', { error: (err as Error).message });
