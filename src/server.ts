@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import net from 'net';
 import app from './app';
 import config from './config';

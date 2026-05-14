@@ -1,3 +1,4 @@
+import { injectable } from 'tsyringe';
 import { PrismaClient, Chat } from '@prisma/client';
 import prismaService from '../utils/prisma';
 
@@ -15,6 +16,7 @@ export interface PaginatedResult<T> {
   };
 }
 
+@injectable()
 export class ChatRepository {
   private prisma: PrismaClient;
 

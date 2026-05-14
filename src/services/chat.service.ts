@@ -1,8 +1,10 @@
+import { injectable } from 'tsyringe';
 import { ChatRepository } from '../repositories/chat.repository';
 import { MessageRepository } from '../repositories/message.repository';
 import { FeatureFlagService } from './feature-flag.service';
 import { CHAT_HISTORY } from '../config/constants';
 
+@injectable()
 export class ChatService {
   constructor(
     private chatRepository: ChatRepository,

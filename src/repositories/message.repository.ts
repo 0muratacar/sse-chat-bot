@@ -1,6 +1,8 @@
+import { injectable } from 'tsyringe';
 import { PrismaClient, Message } from '@prisma/client';
 import prismaService from '../utils/prisma';
 
+@injectable()
 export class MessageRepository {
   private prisma: PrismaClient;
 

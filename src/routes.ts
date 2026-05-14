@@ -3,15 +3,18 @@ import container from './container';
 import { AdminController } from './controllers/admin.controller';
 import { ChatController } from './controllers/chat.controller';
 import { CompletionController } from './controllers/completion.controller';
+import { FeatureFlagService } from './services/feature-flag.service';
+import { ChatService } from './services/chat.service';
+import { CompletionService } from './services/completion.service';
 import { appCheckMiddleware, authMiddleware, clientTypeMiddleware, validateBody, validateParams } from './middlewares';
 import { createFlagSchema, updateFlagSchema, chatIdParamsSchema, completionBodySchema } from './middlewares/schemas';
 import { AuthenticatedRequest } from './types';
 
 const router = Router();
 
-const adminController = new AdminController(container.featureFlagService);
-const chatController = new ChatController(container.chatService);
-const completionController = new CompletionController(container.completionService);
+const adminController = new AdminController(container.resolve(FeatureFlagService));
+const chatController = new ChatController(container.resolve(ChatService));
+const completionController = new CompletionController(container.resolve(CompletionService));
 
 // Middleware chain for protected routes: App Check → Auth → Client Type
 const protectedChain = [appCheckMiddleware, authMiddleware, clientTypeMiddleware];

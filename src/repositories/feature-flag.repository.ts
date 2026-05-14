@@ -1,6 +1,8 @@
+import { injectable } from 'tsyringe';
 import { PrismaClient, FeatureFlag } from '@prisma/client';
 import prismaService from '../utils/prisma';
 
+@injectable()
 export class FeatureFlagRepository {
   private prisma: PrismaClient;
 

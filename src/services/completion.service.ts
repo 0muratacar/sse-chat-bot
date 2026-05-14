@@ -1,3 +1,4 @@
+import { injectable } from 'tsyringe';
 import { Response } from 'express';
 import { MessageRepository } from '../repositories/message.repository';
 import { ChatRepository } from '../repositories/chat.repository';
@@ -5,6 +6,7 @@ import { FeatureFlagService } from './feature-flag.service';
 import { SSEEvent } from '../types';
 import logger from '../utils/logger';
 
+@injectable()
 export class CompletionService {
   constructor(
     private messageRepository: MessageRepository,

@@ -1,3 +1,4 @@
+import { injectable } from 'tsyringe';
 import { FeatureFlagRepository } from '../repositories/feature-flag.repository';
 import { RedisService } from './redis.service';
 import { FEATURE_FLAG_DEFAULTS, PAGINATION } from '../config/constants';
@@ -5,6 +6,7 @@ import logger from '../utils/logger';
 
 const REDIS_PREFIX = 'feature_flag:';
 
+@injectable()
 export class FeatureFlagService {
   constructor(
     private featureFlagRepository: FeatureFlagRepository,

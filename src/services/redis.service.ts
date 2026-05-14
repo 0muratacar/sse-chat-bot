@@ -1,9 +1,10 @@
+import { singleton } from 'tsyringe';
 import Redis from 'ioredis';
 import config from '../config';
 import logger from '../utils/logger';
 
+@singleton()
 export class RedisService {
-  private static instance: RedisService;
   private client: Redis;
 
   constructor() {
@@ -17,13 +18,6 @@ export class RedisService {
 
     this.client.on('connect', () => logger.info('Redis connected'));
     this.client.on('error', (err) => logger.error('Redis error', { error: err.message }));
-  }
-
-  static getInstance(): RedisService {
-    if (!RedisService.instance) {
-      RedisService.instance = new RedisService();
-    }
-    return RedisService.instance;
   }
 
   async get(key: string): Promise<string | null> {

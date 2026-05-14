@@ -102,10 +102,10 @@ curl -X PUT http://localhost:3000/api/admin/features/STREAMING_ENABLED \
 
 ### Design Patterns
 
-- **Dependency Injection** — Manual DI via `container.ts`
+- **Dependency Injection** — Decorator-based DI via `tsyringe` (`@injectable()`, `@singleton()`)
 - **Service Pattern** — Business logic in service classes
 - **Repository Pattern** — Database access abstraction
-- **Singleton Pattern** — PrismaService, RedisService, Logger, Config
+- **Singleton Pattern** — `@singleton()` for RedisService; PrismaService, Logger, Config via module-level instances
 - **Strategy Pattern** — Feature flag-based behavior switching
 
 ### Middleware Chain (Order)
@@ -144,7 +144,7 @@ src/
 ├── strategies/      # Strategy pattern implementations
 ├── types/           # TypeScript interfaces
 ├── utils/           # Logger, Prisma client, helpers
-├── container.ts     # DI container wiring
+├── container.ts     # tsyringe DI container (auto-resolves dependencies)
 ├── routes.ts        # Route registration
 └── app.ts           # Express app setup
 ```
