@@ -10,9 +10,10 @@ export class ChatController {
 
   async getChats(req: AuthenticatedRequest, res: Response): Promise<void> {
     const userId = req.user!.id;
+    const tier = req.user!.tier;
     const cursor = req.query.cursor as string | undefined;
 
-    const result = await this.chatService.getChats(userId, cursor);
+    const result = await this.chatService.getChats(userId, cursor, tier);
     res.json({ data: result.data, pagination: result.pagination });
   }
 
@@ -26,9 +27,10 @@ export class ChatController {
 
   async getChatHistory(req: AuthenticatedRequest, res: Response): Promise<void> {
     const userId = req.user!.id;
+    const tier = req.user!.tier;
     const chatId = req.params.chatId as string;
 
-    const result = await this.chatService.getChatHistory(chatId, userId);
+    const result = await this.chatService.getChatHistory(chatId, userId, tier);
 
     if (!result) {
       res.status(404).json({

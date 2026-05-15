@@ -10,10 +10,11 @@ export class CompletionController {
 
   async complete(req: AuthenticatedRequest, res: Response): Promise<void> {
     const userId = req.user!.id;
+    const tier = req.user!.tier;
     const chatId = req.params.chatId as string;
     const { message } = req.body;
 
-    const result = await this.completionService.complete(chatId, userId, message, res);
+    const result = await this.completionService.complete(chatId, userId, message, res, tier);
 
     if (result === null) {
       res.status(404).json({

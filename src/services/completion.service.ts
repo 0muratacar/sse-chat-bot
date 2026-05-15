@@ -1,5 +1,6 @@
 import { injectable } from 'tsyringe';
 import { Response } from 'express';
+import { Tier } from '@prisma/client';
 import { MessageRepository } from '../repositories/message.repository';
 import { ChatRepository } from '../repositories/chat.repository';
 import { UserRepository } from '../repositories/user.repository';
@@ -18,7 +19,7 @@ export class CompletionService {
     private geminiService: GeminiService,
   ) {}
 
-  async complete(chatId: string, userId: string, userMessage: string, res: Response) {
+  async complete(chatId: string, userId: string, userMessage: string, res: Response, tier?: Tier) {
     const chat = await this.chatRepository.findByIdAndUserId(chatId, userId);
     if (!chat) {
       return null;
@@ -26,9 +27,9 @@ export class CompletionService {
 
     await this.messageRepository.create({ chatId, role: 'user', content: userMessage });
 
-    const streamingEnabled = await this.featureFlagService.getBoolean('STREAMING_ENABLED');
-    const toolsEnabled = await this.featureFlagService.getBoolean('AI_TOOLS_ENABLED');
-    const baseSystemPrompt = await this.featureFlagService.getString('SYSTEM_PROMPT') || 'You are a helpful assistant.';
+    const streamingEnabled = await this.featureFlagService.getBoolean('STREAMING_ENABLED', tier);
+    const toolsEnabled = await this.featureFlagService.getBoolean('AI_TOOLS_ENABLED', tier);
+    const baseSystemPrompt = await this.featureFlagService.getString('SYSTEM_PROMPT', tier) || 'You are a helpful assistant.';
 
     const user = await this.userRepository.findById(userId);
     const systemPrompt = user?.name
