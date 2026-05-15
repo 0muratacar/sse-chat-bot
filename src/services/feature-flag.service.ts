@@ -1,7 +1,7 @@
 import { injectable } from 'tsyringe';
 import { FeatureFlagRepository } from '../repositories/feature-flag.repository';
 import { RedisService } from './redis.service';
-import { FEATURE_FLAG_DEFAULTS, PAGINATION } from '../config/constants';
+import { FEATURE_FLAG_DEFAULTS, FEATURE_FLAG_DEFINITIONS, PAGINATION } from '../config/constants';
 import logger from '../utils/logger';
 
 const REDIS_PREFIX = 'feature_flag:';
@@ -57,6 +57,16 @@ export class FeatureFlagService {
     await this.redisService.set(`${REDIS_PREFIX}${data.key}`, data.value);
     logger.info('Feature flag created', { key: data.key, value: data.value });
     return flag;
+  }
+
+  async ensureDefaults(): Promise<void> {
+    for (const def of FEATURE_FLAG_DEFINITIONS) {
+      const existing = await this.featureFlagRepository.findByKey(def.key);
+      if (!existing) {
+        await this.featureFlagRepository.create(def);
+        logger.info('Feature flag created on init', { key: def.key, value: def.value });
+      }
+    }
   }
 
   private async getValue(key: string): Promise<string | null> {

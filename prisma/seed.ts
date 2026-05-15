@@ -3,6 +3,14 @@ import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
+const FEATURE_FLAGS = [
+  { key: 'STREAMING_ENABLED', value: 'true', type: 'BOOLEAN', description: 'Enable SSE streaming for completion endpoint' },
+  { key: 'PAGINATION_LIMIT', value: '20', type: 'NUMBER', description: 'Max items returned in chat list (10-100)' },
+  { key: 'AI_TOOLS_ENABLED', value: 'true', type: 'BOOLEAN', description: 'Enable AI tool usage in completions' },
+  { key: 'CHAT_HISTORY_ENABLED', value: 'true', type: 'BOOLEAN', description: 'Return full message history vs last N messages' },
+  { key: 'RATE_LIMIT_PER_MINUTE', value: '60', type: 'NUMBER', description: 'Max requests per minute per user' },
+];
+
 async function main() {
   const demoPassword = await bcrypt.hash('demo123', 10);
   const adminPassword = await bcrypt.hash('admin123', 10);
@@ -73,16 +81,11 @@ async function main() {
   });
 
   await prisma.featureFlag.createMany({
-    data: [
-      { key: 'STREAMING_ENABLED', value: 'true', type: 'BOOLEAN', description: 'Enable SSE streaming for completion endpoint' },
-      { key: 'PAGINATION_LIMIT', value: '20', type: 'NUMBER', description: 'Max items returned in chat list (10-100)' },
-      { key: 'AI_TOOLS_ENABLED', value: 'true', type: 'BOOLEAN', description: 'Enable AI tool usage in completions' },
-      { key: 'CHAT_HISTORY_ENABLED', value: 'true', type: 'BOOLEAN', description: 'Return full message history vs last N messages' },
-    ],
+    data: FEATURE_FLAGS,
     skipDuplicates: true,
   });
 
-  console.log('Seed completed:', { user: user.id, admin: admin.id, chats: [chat1.id, chat2.id, chat3.id] });
+  console.log('Seed completed:', { user: user.id, admin: admin.id, chats: [chat1.id, chat2.id, chat3.id], featureFlags: FEATURE_FLAGS.length });
 }
 
 main()

@@ -1,8 +1,10 @@
 import 'reflect-metadata';
 import net from 'net';
 import app from './app';
+import container from './container';
 import config from './config';
 import logger from './utils/logger';
+import { FeatureFlagService } from './services/feature-flag.service';
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise((resolve) => {
@@ -25,6 +27,9 @@ async function findAvailablePort(startPort: number): Promise<number> {
 }
 
 async function start() {
+  const featureFlagService = container.resolve(FeatureFlagService);
+  await featureFlagService.ensureDefaults();
+
   const desiredPort = config.get('port');
   const port = await findAvailablePort(desiredPort);
 
