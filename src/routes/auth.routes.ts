@@ -1,15 +1,26 @@
 import { RouteDefinition } from './route.types';
-import { loginSchema } from '../middlewares/schemas';
+import { requestOtpSchema, verifyOtpSchema } from '../middlewares/schemas';
 
 export const authRoutes: RouteDefinition[] = [
   {
-    path: '/login',
+    path: '/auth/request-otp',
     method: 'post',
-    controller: 'authController.login',
+    controller: 'authController.requestOtp',
     config: {
-      description: 'Login with email and password, returns JWT token',
+      description: 'Send OTP code to email',
       middlewares: [],
-      validation: { body: loginSchema },
+      validation: { body: requestOtpSchema },
+      tags: ['auth'],
+    },
+  },
+  {
+    path: '/auth/verify-otp',
+    method: 'post',
+    controller: 'authController.verifyOtp',
+    config: {
+      description: 'Verify OTP and get JWT token',
+      middlewares: [],
+      validation: { body: verifyOtpSchema },
       tags: ['auth'],
     },
   },

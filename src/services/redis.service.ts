@@ -24,8 +24,24 @@ export class RedisService {
     return this.client.get(key);
   }
 
-  async set(key: string, value: string): Promise<void> {
-    await this.client.set(key, value);
+  async set(key: string, value: string, ttlSeconds?: number): Promise<void> {
+    if (ttlSeconds) {
+      await this.client.set(key, value, 'EX', ttlSeconds);
+    } else {
+      await this.client.set(key, value);
+    }
+  }
+
+  async incr(key: string): Promise<number> {
+    return this.client.incr(key);
+  }
+
+  async expire(key: string, seconds: number): Promise<void> {
+    await this.client.expire(key, seconds);
+  }
+
+  async ttl(key: string): Promise<number> {
+    return this.client.ttl(key);
   }
 
   async del(key: string): Promise<void> {

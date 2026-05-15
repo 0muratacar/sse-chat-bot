@@ -7,6 +7,11 @@ interface AppConfig {
   redisUrl: string;
   jwtSecret: string;
   openaiApiKey: string | undefined;
+  smtpHost: string;
+  smtpPort: number;
+  smtpUser: string;
+  smtpPass: string;
+  smtpFrom: string;
 }
 
 class Config {
@@ -21,6 +26,11 @@ class Config {
       redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
       jwtSecret: process.env.JWT_SECRET || 'dev-secret-key',
       openaiApiKey: process.env.OPENAI_API_KEY || undefined,
+      smtpHost: process.env.SMTP_HOST || 'smtp.gmail.com',
+      smtpPort: parseInt(process.env.SMTP_PORT || '587', 10),
+      smtpUser: process.env.SMTP_USER || '',
+      smtpPass: process.env.SMTP_PASS || '',
+      smtpFrom: process.env.SMTP_FROM || '',
     };
   }
 
