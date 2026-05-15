@@ -1,5 +1,7 @@
 import { injectable } from 'tsyringe';
+import { Tier } from '@prisma/client';
 import { FeatureFlagRepository } from '../repositories/feature-flag.repository';
+import { FeatureFlagTierRepository } from '../repositories/feature-flag-tier.repository';
 import { RedisService } from './redis.service';
 import { FEATURE_FLAG_DEFAULTS, FEATURE_FLAG_DEFINITIONS, PAGINATION } from '../config/constants';
 import logger from '../utils/logger';
@@ -10,19 +12,20 @@ const REDIS_PREFIX = 'feature_flag:';
 export class FeatureFlagService {
   constructor(
     private featureFlagRepository: FeatureFlagRepository,
+    private featureFlagTierRepository: FeatureFlagTierRepository,
     private redisService: RedisService
   ) {}
 
-  async getBoolean(key: string): Promise<boolean> {
-    const value = await this.getValue(key);
+  async getBoolean(key: string, tier?: Tier): Promise<boolean> {
+    const value = await this.getValue(key, tier);
     if (value === null) {
       return (FEATURE_FLAG_DEFAULTS as Record<string, unknown>)[key] as boolean ?? false;
     }
     return value === 'true';
   }
 
-  async getNumber(key: string): Promise<number> {
-    const value = await this.getValue(key);
+  async getNumber(key: string, tier?: Tier): Promise<number> {
+    const value = await this.getValue(key, tier);
     if (value === null) {
       return (FEATURE_FLAG_DEFAULTS as Record<string, unknown>)[key] as number ?? 0;
     }
@@ -33,8 +36,8 @@ export class FeatureFlagService {
     return num;
   }
 
-  async getString(key: string): Promise<string | null> {
-    return this.getValue(key);
+  async getString(key: string, tier?: Tier): Promise<string | null> {
+    return this.getValue(key, tier);
   }
 
   async getAll() {
@@ -66,6 +69,24 @@ export class FeatureFlagService {
     return flag;
   }
 
+  async getTierOverrides(key: string) {
+    return this.featureFlagTierRepository.findByKey(key);
+  }
+
+  async setTierOverride(key: string, tier: Tier, value: string) {
+    const override = await this.featureFlagTierRepository.upsert(key, tier, value);
+    await this.redisService.set(`${REDIS_PREFIX}${key}:${tier}`, value);
+    logger.info('Feature flag tier override set', { key, tier, value });
+    return override;
+  }
+
+  async deleteTierOverride(key: string, tier: Tier) {
+    const override = await this.featureFlagTierRepository.delete(key, tier);
+    await this.redisService.del(`${REDIS_PREFIX}${key}:${tier}`);
+    logger.info('Feature flag tier override deleted', { key, tier });
+    return override;
+  }
+
   async ensureDefaults(): Promise<void> {
     for (const def of FEATURE_FLAG_DEFINITIONS) {
       const existing = await this.featureFlagRepository.findByKey(def.key);
@@ -76,11 +97,20 @@ export class FeatureFlagService {
     }
   }
 
-  private async getValue(key: string): Promise<string | null> {
-    const cached = await this.redisService.get(`${REDIS_PREFIX}${key}`);
-    if (cached !== null) {
-      return cached;
+  private async getValue(key: string, tier?: Tier): Promise<string | null> {
+    if (tier) {
+      const tierCached = await this.redisService.get(`${REDIS_PREFIX}${key}:${tier}`);
+      if (tierCached !== null) return tierCached;
+
+      const tierFlag = await this.featureFlagTierRepository.findByKeyAndTier(key, tier);
+      if (tierFlag) {
+        await this.redisService.set(`${REDIS_PREFIX}${key}:${tier}`, tierFlag.value);
+        return tierFlag.value;
+      }
     }
+
+    const cached = await this.redisService.get(`${REDIS_PREFIX}${key}`);
+    if (cached !== null) return cached;
 
     const flag = await this.featureFlagRepository.findByKey(key);
     if (flag) {
