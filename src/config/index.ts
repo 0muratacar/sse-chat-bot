@@ -7,6 +7,7 @@ interface AppConfig {
   redisUrl: string;
   jwtSecret: string;
   openaiApiKey: string | undefined;
+  geminiApiKey: string;
   smtpHost: string;
   smtpPort: number;
   smtpUser: string;
@@ -26,6 +27,7 @@ class Config {
       redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
       jwtSecret: process.env.JWT_SECRET || 'dev-secret-key',
       openaiApiKey: process.env.OPENAI_API_KEY || undefined,
+      geminiApiKey: process.env.GEMINI_API_KEY || '',
       smtpHost: process.env.SMTP_HOST || 'smtp.gmail.com',
       smtpPort: parseInt(process.env.SMTP_PORT || '587', 10),
       smtpUser: process.env.SMTP_USER || '',

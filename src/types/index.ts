@@ -26,6 +26,6 @@ export interface CompletionRequest {
 }
 
 export interface SSEEvent {
-  type: 'thinking' | 'content' | 'tool_execution' | 'done';
+  type: 'thinking' | 'content' | 'tool_execution' | 'done' | 'error';
   data: unknown;
 }

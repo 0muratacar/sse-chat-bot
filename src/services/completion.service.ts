@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { MessageRepository } from '../repositories/message.repository';
 import { ChatRepository } from '../repositories/chat.repository';
 import { FeatureFlagService } from './feature-flag.service';
+import { GeminiService } from './gemini.service';
 import { SSEEvent } from '../types';
 import logger from '../utils/logger';
 
@@ -11,7 +12,8 @@ export class CompletionService {
   constructor(
     private messageRepository: MessageRepository,
     private chatRepository: ChatRepository,
-    private featureFlagService: FeatureFlagService
+    private featureFlagService: FeatureFlagService,
+    private geminiService: GeminiService,
   ) {}
 
   async complete(chatId: string, userId: string, userMessage: string, res: Response) {
@@ -25,14 +27,17 @@ export class CompletionService {
     const streamingEnabled = await this.featureFlagService.getBoolean('STREAMING_ENABLED');
     const toolsEnabled = await this.featureFlagService.getBoolean('AI_TOOLS_ENABLED');
 
+    const history = await this.messageRepository.findByChatIdLimited(chatId, 20);
+    const messages = history.map((m) => ({ role: m.role, content: m.content }));
+
     if (streamingEnabled) {
-      return this.streamResponse(res, userMessage, toolsEnabled, chatId);
+      return this.streamResponse(res, messages, toolsEnabled, chatId);
     } else {
-      return this.jsonResponse(userMessage, toolsEnabled, chatId);
+      return this.jsonResponse(messages, toolsEnabled, chatId);
     }
   }
 
-  private async streamResponse(res: Response, userMessage: string, toolsEnabled: boolean, chatId: string) {
+  private async streamResponse(res: Response, messages: { role: string; content: string }[], toolsEnabled: boolean, chatId: string) {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
@@ -40,22 +45,42 @@ export class CompletionService {
     this.sendEvent(res, { type: 'thinking', data: { message: 'Processing your request...' } });
 
     if (toolsEnabled) {
-      const toolResult = this.executeMockTool(userMessage);
+      const toolResult = this.executeMockTool(messages[messages.length - 1].content);
       if (toolResult) {
         this.sendEvent(res, { type: 'tool_execution', data: toolResult });
       }
     }
 
-    const responseContent = this.generateMockResponse(userMessage);
-    const words = responseContent.split(' ');
+    let fullContent = '';
 
-    for (let i = 0; i < words.length; i++) {
-      const chunk = words[i] + (i < words.length - 1 ? ' ' : '');
-      this.sendEvent(res, { type: 'content', data: { content: chunk } });
-      await this.delay(50);
+    if (this.geminiService.isConfigured) {
+      try {
+        for await (const chunk of this.geminiService.streamContent(messages)) {
+          fullContent += chunk;
+          this.sendEvent(res, { type: 'content', data: { content: chunk } });
+        }
+      } catch (err) {
+        logger.error('Gemini stream failed, falling back to mock', { error: (err as Error).message });
+        this.sendEvent(res, { type: 'error', data: { message: (err as Error).message } });
+        fullContent = this.generateMockResponse(messages[messages.length - 1].content);
+        const words = fullContent.split(' ');
+        for (let i = 0; i < words.length; i++) {
+          const chunk = words[i] + (i < words.length - 1 ? ' ' : '');
+          this.sendEvent(res, { type: 'content', data: { content: chunk } });
+          await this.delay(50);
+        }
+      }
+    } else {
+      fullContent = this.generateMockResponse(messages[messages.length - 1].content);
+      const words = fullContent.split(' ');
+      for (let i = 0; i < words.length; i++) {
+        const chunk = words[i] + (i < words.length - 1 ? ' ' : '');
+        this.sendEvent(res, { type: 'content', data: { content: chunk } });
+        await this.delay(50);
+      }
     }
 
-    await this.messageRepository.create({ chatId, role: 'assistant', content: responseContent });
+    await this.messageRepository.create({ chatId, role: 'assistant', content: fullContent });
 
     this.sendEvent(res, { type: 'done', data: { message: 'Completion finished' } });
     res.end();
@@ -63,13 +88,25 @@ export class CompletionService {
     return { streamed: true };
   }
 
-  private async jsonResponse(userMessage: string, toolsEnabled: boolean, chatId: string) {
+  private async jsonResponse(messages: { role: string; content: string }[], toolsEnabled: boolean, chatId: string) {
     let toolResult = null;
     if (toolsEnabled) {
-      toolResult = this.executeMockTool(userMessage);
+      toolResult = this.executeMockTool(messages[messages.length - 1].content);
     }
 
-    const responseContent = this.generateMockResponse(userMessage);
+    let responseContent: string;
+
+    if (this.geminiService.isConfigured) {
+      try {
+        responseContent = await this.geminiService.generateContent(messages);
+      } catch (err) {
+        logger.error('Gemini generation failed, falling back to mock', { error: (err as Error).message });
+        responseContent = this.generateMockResponse(messages[messages.length - 1].content);
+      }
+    } else {
+      responseContent = this.generateMockResponse(messages[messages.length - 1].content);
+    }
+
     await this.messageRepository.create({ chatId, role: 'assistant', content: responseContent });
 
     return {
