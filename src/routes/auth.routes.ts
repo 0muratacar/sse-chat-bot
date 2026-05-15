@@ -8,7 +8,7 @@ export const authRoutes: RouteDefinition[] = [
     controller: 'authController.requestOtp',
     config: {
       description: 'Send OTP code to email',
-      middlewares: [],
+      middlewares: ['appCheck'],
       validation: { body: requestOtpSchema },
       tags: ['auth'],
     },
@@ -19,7 +19,7 @@ export const authRoutes: RouteDefinition[] = [
     controller: 'authController.verifyOtp',
     config: {
       description: 'Verify OTP and get JWT token',
-      middlewares: [],
+      middlewares: ['appCheck'],
       validation: { body: verifyOtpSchema },
       tags: ['auth'],
     },

@@ -20,12 +20,16 @@ export const chatIdParamsSchema = z.object({
 });
 
 export const requestOtpSchema = z.object({
-  email: z.string().email('Invalid email format'),
+  email: z.string().max(254, 'Email must be at most 254 characters').email('Invalid email format'),
 });
 
 export const verifyOtpSchema = z.object({
-  email: z.string().email('Invalid email format'),
+  email: z.string().max(254, 'Email must be at most 254 characters').email('Invalid email format'),
   otp: z.string().length(6, 'OTP must be 6 digits'),
+});
+
+export const updateProfileSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100, 'Name must be at most 100 characters'),
 });
 
 export const createChatSchema = z.object({

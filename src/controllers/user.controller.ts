@@ -8,6 +8,22 @@ import { t } from '../i18n';
 export class UserController {
   constructor(private userRepository: UserRepository) {}
 
+  async updateProfile(req: AuthenticatedRequest, res: Response): Promise<void> {
+    const userId = req.user!.id;
+    const { name } = req.body;
+
+    const user = await this.userRepository.updateName(userId, name);
+
+    res.json({
+      data: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
+    });
+  }
+
   async getMe(req: AuthenticatedRequest, res: Response): Promise<void> {
     const userId = req.user!.id;
 
