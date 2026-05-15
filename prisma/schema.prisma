@@ -21,6 +21,8 @@ model User {
   chats     Chat[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("users")
 }
 
 model Chat {
@@ -33,6 +35,7 @@ model Chat {
   updatedAt DateTime  @updatedAt
 
   @@index([userId, createdAt])
+  @@map("chats")
 }
 
 model Message {
@@ -44,6 +47,7 @@ model Message {
   createdAt DateTime @default(now())
 
   @@index([chatId, createdAt])
+  @@map("messages")
 }
 
 model FeatureFlag {
@@ -54,4 +58,6 @@ model FeatureFlag {
   description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@map("feature_flags")
 }

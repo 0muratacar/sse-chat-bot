@@ -1,24 +1,8 @@
 services:
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: chatbot
-      POSTGRES_PASSWORD: chatbot_secret
-      POSTGRES_DB: chatbot_db
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U chatbot -d chatbot_db"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - "6381:6379"
     volumes:
       - redis_data:/data
     healthcheck:
@@ -29,20 +13,19 @@ services:
 
   app:
     build: .
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=development
       - PORT=3000
-      - DATABASE_URL=postgresql://chatbot:chatbot_secret@postgres:5432/chatbot_db
+      - DATABASE_URL=postgresql://postgres:postgres123@host.docker.internal:5432/chatbot_db
       - REDIS_URL=redis://redis:6379
       - JWT_SECRET=dev-secret-key-change-in-production
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
 
 volumes:
-  postgres_data:
   redis_data:
