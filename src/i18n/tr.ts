@@ -18,4 +18,6 @@ export const tr = {
   NOT_FOUND: 'Kaynak bulunamadı',
   SERVICE_UNAVAILABLE: 'Veritabanı bağlantı hatası',
   INTERNAL_SERVER_ERROR: 'Beklenmeyen bir hata oluştu',
+  INVALID_TIER: 'Geçersiz tier değeri',
+  TIER_OVERRIDE_NOT_FOUND: 'Bu flag için tier override bulunamadı',
 } as const;

@@ -5,11 +5,18 @@ export enum Role {
   ADMIN = 'ADMIN',
 }
 
+export enum Tier {
+  INDIVIDUAL = 'INDIVIDUAL',
+  STARTUP = 'STARTUP',
+  ENTERPRISE = 'ENTERPRISE',
+}
+
 export interface AuthenticatedRequest extends Request {
   user?: {
     id: string;
     email: string;
     role: Role;
+    tier: Tier;
   };
   clientType?: 'web' | 'mobile' | 'desktop';
 }

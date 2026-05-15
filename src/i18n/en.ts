@@ -18,4 +18,6 @@ export const en = {
   NOT_FOUND: 'Resource not found',
   SERVICE_UNAVAILABLE: 'Database connection failed',
   INTERNAL_SERVER_ERROR: 'An unexpected error occurred',
+  INVALID_TIER: 'Invalid tier value',
+  TIER_OVERRIDE_NOT_FOUND: 'Tier override not found for this flag',
 } as const;

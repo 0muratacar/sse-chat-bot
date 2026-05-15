@@ -1,5 +1,5 @@
 import { injectable } from 'tsyringe';
-import { PrismaClient, User } from '@prisma/client';
+import { PrismaClient, User, Tier } from '@prisma/client';
 import prismaService from '../utils/prisma';
 
 @injectable()
@@ -24,5 +24,9 @@ export class UserRepository {
 
   async updateName(id: string, name: string): Promise<User> {
     return this.prisma.user.update({ where: { id }, data: { name } });
+  }
+
+  async updateTier(id: string, tier: Tier): Promise<User> {
+    return this.prisma.user.update({ where: { id }, data: { tier } });
   }
 }

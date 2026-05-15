@@ -27,3 +27,5 @@ export const CHAT_HISTORY = {
 
 export const CLIENT_TYPES = ['web', 'mobile', 'desktop'] as const;
 export type ClientType = (typeof CLIENT_TYPES)[number];
+
+export const TIERS = ['INDIVIDUAL', 'STARTUP', 'ENTERPRISE'] as const;
