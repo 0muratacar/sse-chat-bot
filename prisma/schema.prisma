@@ -12,12 +12,19 @@ enum Role {
   ADMIN
 }
 
+enum Tier {
+  INDIVIDUAL
+  STARTUP
+  ENTERPRISE
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
   name      String?
   password  String
   role      Role     @default(USER)
+  tier      Tier     @default(INDIVIDUAL)
   chats     Chat[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -51,13 +58,28 @@ model Message {
 }
 
 model FeatureFlag {
-  id          String   @id @default(uuid())
-  key         String   @unique
-  value       String
-  type        String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String            @id @default(uuid())
+  key           String            @unique
+  value         String
+  type          String
+  description   String?
+  tierOverrides FeatureFlagTier[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 
   @@map("feature_flags")
+}
+
+model FeatureFlagTier {
+  id        String   @id @default(uuid())
+  flagKey   String
+  tier      Tier
+  value     String
+  flag      FeatureFlag @relation(fields: [flagKey], references: [key], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([flagKey, tier])
+  @@index([flagKey])
+  @@map("feature_flag_tiers")
 }
