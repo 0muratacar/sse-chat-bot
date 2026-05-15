@@ -35,3 +35,20 @@ export const updateProfileSchema = z.object({
 export const createChatSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200, 'Title must be at most 200 characters'),
 });
+
+export const updateTierOverrideSchema = z.object({
+  value: z.union([z.string(), z.number(), z.boolean()]).transform(String),
+});
+
+export const updateUserTierSchema = z.object({
+  tier: z.enum(['INDIVIDUAL', 'STARTUP', 'ENTERPRISE']),
+});
+
+export const tierParamSchema = z.object({
+  key: z.string().min(1),
+  tier: z.enum(['INDIVIDUAL', 'STARTUP', 'ENTERPRISE']),
+});
+
+export const userIdParamSchema = z.object({
+  id: z.string().uuid('Invalid user ID format'),
+});
