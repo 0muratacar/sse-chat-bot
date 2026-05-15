@@ -3,7 +3,7 @@ import { requestOtpSchema, verifyOtpSchema } from '../middlewares/schemas';
 
 export const authRoutes: RouteDefinition[] = [
   {
-    path: '/auth/request-otp',
+    path: '/request-otp',
     method: 'post',
     controller: 'authController.requestOtp',
     config: {
@@ -14,7 +14,7 @@ export const authRoutes: RouteDefinition[] = [
     },
   },
   {
-    path: '/auth/verify-otp',
+    path: '/verify-otp',
     method: 'post',
     controller: 'authController.verifyOtp',
     config: {
