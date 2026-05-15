@@ -2,6 +2,7 @@ import { injectable } from 'tsyringe';
 import { Response } from 'express';
 import { MessageRepository } from '../repositories/message.repository';
 import { ChatRepository } from '../repositories/chat.repository';
+import { UserRepository } from '../repositories/user.repository';
 import { FeatureFlagService } from './feature-flag.service';
 import { GeminiService } from './gemini.service';
 import { SSEEvent } from '../types';
@@ -12,6 +13,7 @@ export class CompletionService {
   constructor(
     private messageRepository: MessageRepository,
     private chatRepository: ChatRepository,
+    private userRepository: UserRepository,
     private featureFlagService: FeatureFlagService,
     private geminiService: GeminiService,
   ) {}
@@ -26,18 +28,24 @@ export class CompletionService {
 
     const streamingEnabled = await this.featureFlagService.getBoolean('STREAMING_ENABLED');
     const toolsEnabled = await this.featureFlagService.getBoolean('AI_TOOLS_ENABLED');
+    const baseSystemPrompt = await this.featureFlagService.getString('SYSTEM_PROMPT') || 'You are a helpful assistant.';
+
+    const user = await this.userRepository.findById(userId);
+    const systemPrompt = user?.name
+      ? `${baseSystemPrompt}\n\nThe user's name is ${user.name}. Use their name when addressing them.`
+      : baseSystemPrompt;
 
     const history = await this.messageRepository.findByChatIdLimited(chatId, 20);
     const messages = history.map((m) => ({ role: m.role, content: m.content }));
 
     if (streamingEnabled) {
-      return this.streamResponse(res, messages, toolsEnabled, chatId);
+      return this.streamResponse(res, messages, toolsEnabled, chatId, systemPrompt);
     } else {
-      return this.jsonResponse(messages, toolsEnabled, chatId);
+      return this.jsonResponse(messages, toolsEnabled, chatId, systemPrompt);
     }
   }
 
-  private async streamResponse(res: Response, messages: { role: string; content: string }[], toolsEnabled: boolean, chatId: string) {
+  private async streamResponse(res: Response, messages: { role: string; content: string }[], toolsEnabled: boolean, chatId: string, systemPrompt: string) {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
@@ -55,7 +63,7 @@ export class CompletionService {
 
     if (this.geminiService.isConfigured) {
       try {
-        for await (const chunk of this.geminiService.streamContent(messages)) {
+        for await (const chunk of this.geminiService.streamContent(messages, systemPrompt)) {
           fullContent += chunk;
           this.sendEvent(res, { type: 'content', data: { content: chunk } });
         }
@@ -88,7 +96,7 @@ export class CompletionService {
     return { streamed: true };
   }
 
-  private async jsonResponse(messages: { role: string; content: string }[], toolsEnabled: boolean, chatId: string) {
+  private async jsonResponse(messages: { role: string; content: string }[], toolsEnabled: boolean, chatId: string, systemPrompt: string) {
     let toolResult = null;
     if (toolsEnabled) {
       toolResult = this.executeMockTool(messages[messages.length - 1].content);
@@ -98,7 +106,7 @@ export class CompletionService {
 
     if (this.geminiService.isConfigured) {
       try {
-        responseContent = await this.geminiService.generateContent(messages);
+        responseContent = await this.geminiService.generateContent(messages, systemPrompt);
       } catch (err) {
         logger.error('Gemini generation failed, falling back to mock', { error: (err as Error).message });
         responseContent = this.generateMockResponse(messages[messages.length - 1].content);

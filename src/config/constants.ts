@@ -12,6 +12,7 @@ export const FEATURE_FLAG_DEFINITIONS = [
   { key: 'AI_TOOLS_ENABLED', value: 'true', type: 'BOOLEAN', description: 'Enable AI tool usage in completions' },
   { key: 'CHAT_HISTORY_ENABLED', value: 'true', type: 'BOOLEAN', description: 'Return full message history vs last N messages' },
   { key: 'RATE_LIMIT_PER_MINUTE', value: '60', type: 'NUMBER', description: 'Max requests per minute per user' },
+  { key: 'SYSTEM_PROMPT', value: 'You are a helpful assistant.', type: 'STRING', description: 'System prompt that defines AI behavior and topic boundaries' },
 ] as const;
 
 export const PAGINATION = {

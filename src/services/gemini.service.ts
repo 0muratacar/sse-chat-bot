@@ -11,10 +11,13 @@ export class GeminiService {
     this.client = new GoogleGenerativeAI(config.get('geminiApiKey'));
   }
 
-  async generateContent(messages: { role: string; content: string }[]): Promise<string> {
-    const model = this.client.getGenerativeModel({ model: this.modelName });
+  async generateContent(messages: { role: string; content: string }[], systemPrompt?: string): Promise<string> {
+    const model = this.client.getGenerativeModel({
+      model: this.modelName,
+      ...(systemPrompt && { systemInstruction: systemPrompt }),
+    });
     const contents = messages.map((m) => ({
-      role: m.role === 'assistant' ? 'model' : 'user',
+      role: m.role === 'user' ? 'user' : 'model',
       parts: [{ text: m.content }],
     }));
 
@@ -22,10 +25,13 @@ export class GeminiService {
     return result.response.text();
   }
 
-  async *streamContent(messages: { role: string; content: string }[]): AsyncGenerator<string> {
-    const model = this.client.getGenerativeModel({ model: this.modelName });
+  async *streamContent(messages: { role: string; content: string }[], systemPrompt?: string): AsyncGenerator<string> {
+    const model = this.client.getGenerativeModel({
+      model: this.modelName,
+      ...(systemPrompt && { systemInstruction: systemPrompt }),
+    });
     const contents = messages.map((m) => ({
-      role: m.role === 'assistant' ? 'model' : 'user',
+      role: m.role === 'user' ? 'user' : 'model',
       parts: [{ text: m.content }],
     }));
 
