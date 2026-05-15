@@ -1,6 +1,7 @@
 import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import config from '../config';
+import { t } from '../i18n';
 import logger from '../utils/logger';
 import { AuthenticatedRequest, Role } from '../types';
 
@@ -9,7 +10,7 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     res.status(401).json({
-      error: { code: 'UNAUTHORIZED', message: 'Missing or invalid authorization header', status: 401 },
+      error: { code: 'UNAUTHORIZED', message: t('UNAUTHORIZED', req.lang), status: 401 },
     });
     return;
   }
@@ -23,7 +24,7 @@ export function authMiddleware(req: AuthenticatedRequest, res: Response, next: N
   } catch (err) {
     logger.warn('JWT verification failed', { error: (err as Error).message });
     res.status(401).json({
-      error: { code: 'UNAUTHORIZED', message: 'Invalid or expired token', status: 401 },
+      error: { code: 'UNAUTHORIZED', message: t('INVALID_TOKEN', req.lang), status: 401 },
     });
   }
 }

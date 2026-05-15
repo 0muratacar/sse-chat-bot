@@ -44,4 +44,14 @@ export const adminRoutes: RouteDefinition[] = [
       tags: ['admin', 'feature-flag'],
     },
   },
+  {
+    path: '/features/:key',
+    method: 'delete',
+    controller: 'adminController.deleteFlag',
+    config: {
+      description: 'Delete a feature flag',
+      middlewares: ['appCheck', 'auth', 'admin'],
+      tags: ['admin', 'feature-flag'],
+    },
+  },
 ];

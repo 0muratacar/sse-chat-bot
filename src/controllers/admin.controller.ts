@@ -1,6 +1,7 @@
 import { injectable } from 'tsyringe';
 import { Request, Response } from 'express';
 import { FeatureFlagService } from '../services/feature-flag.service';
+import { t } from '../i18n';
 import logger from '../utils/logger';
 
 @injectable()
@@ -18,7 +19,7 @@ export class AdminController {
 
     if (!flag) {
       res.status(404).json({
-        error: { code: 'FLAG_NOT_FOUND', message: `Feature flag '${key}' not found`, status: 404 },
+        error: { code: 'FLAG_NOT_FOUND', message: t('FLAG_NOT_FOUND', req.lang), status: 404 },
       });
       return;
     }
@@ -33,7 +34,7 @@ export class AdminController {
     const existing = await this.featureFlagService.getByKey(key);
     if (!existing) {
       res.status(404).json({
-        error: { code: 'FLAG_NOT_FOUND', message: `Feature flag '${key}' not found`, status: 404 },
+        error: { code: 'FLAG_NOT_FOUND', message: t('FLAG_NOT_FOUND', req.lang), status: 404 },
       });
       return;
     }
@@ -49,12 +50,28 @@ export class AdminController {
     const existing = await this.featureFlagService.getByKey(key);
     if (existing) {
       res.status(409).json({
-        error: { code: 'FLAG_EXISTS', message: `Feature flag '${key}' already exists`, status: 409 },
+        error: { code: 'FLAG_EXISTS', message: t('FLAG_EXISTS', req.lang), status: 409 },
       });
       return;
     }
 
     const flag = await this.featureFlagService.create({ key, value: String(value), type, description });
     res.status(201).json({ data: flag });
+  }
+
+  async deleteFlag(req: Request, res: Response): Promise<void> {
+    const key = req.params.key as string;
+
+    const existing = await this.featureFlagService.getByKey(key);
+    if (!existing) {
+      res.status(404).json({
+        error: { code: 'FLAG_NOT_FOUND', message: t('FLAG_NOT_FOUND', req.lang), status: 404 },
+      });
+      return;
+    }
+
+    await this.featureFlagService.delete(key);
+    logger.info('Admin deleted feature flag', { key });
+    res.status(204).send();
   }
 }

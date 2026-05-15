@@ -28,4 +28,8 @@ export class FeatureFlagRepository {
       data: { value },
     });
   }
+
+  async delete(key: string): Promise<FeatureFlag> {
+    return this.prisma.featureFlag.delete({ where: { key } });
+  }
 }

@@ -59,6 +59,13 @@ export class FeatureFlagService {
     return flag;
   }
 
+  async delete(key: string) {
+    const flag = await this.featureFlagRepository.delete(key);
+    await this.redisService.del(`${REDIS_PREFIX}${key}`);
+    logger.info('Feature flag deleted', { key });
+    return flag;
+  }
+
   async ensureDefaults(): Promise<void> {
     for (const def of FEATURE_FLAG_DEFINITIONS) {
       const existing = await this.featureFlagRepository.findByKey(def.key);

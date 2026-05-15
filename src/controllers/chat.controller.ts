@@ -2,6 +2,7 @@ import { injectable } from 'tsyringe';
 import { Response } from 'express';
 import { ChatService } from '../services/chat.service';
 import { AuthenticatedRequest } from '../types';
+import { t } from '../i18n';
 
 @injectable()
 export class ChatController {
@@ -31,7 +32,7 @@ export class ChatController {
 
     if (!result) {
       res.status(404).json({
-        error: { code: 'CHAT_NOT_FOUND', message: `Chat not found`, status: 404 },
+        error: { code: 'CHAT_NOT_FOUND', message: t('CHAT_NOT_FOUND', req.lang), status: 404 },
       });
       return;
     }

@@ -1,0 +1,18 @@
+export const tr = {
+  VALIDATION_ERROR: 'İstek doğrulama hatası',
+  INVALID_PARAMS: 'Geçersiz istek parametreleri',
+  UNAUTHORIZED: 'Eksik veya geçersiz yetkilendirme başlığı',
+  INVALID_TOKEN: 'Geçersiz veya süresi dolmuş token',
+  FORBIDDEN: 'Admin erişimi gerekli',
+  APP_CHECK_MISSING: 'Firebase App Check token eksik',
+  APP_CHECK_INVALID: 'Geçersiz Firebase App Check token',
+  CHAT_NOT_FOUND: 'Sohbet bulunamadı',
+  FLAG_NOT_FOUND: 'Feature flag bulunamadı',
+  FLAG_EXISTS: 'Feature flag zaten mevcut',
+  USER_NOT_FOUND: 'Kullanıcı bulunamadı',
+  INVALID_CREDENTIALS: 'Geçersiz e-posta veya şifre',
+  CONFLICT: 'Kaynak zaten mevcut',
+  NOT_FOUND: 'Kaynak bulunamadı',
+  SERVICE_UNAVAILABLE: 'Veritabanı bağlantı hatası',
+  INTERNAL_SERVER_ERROR: 'Beklenmeyen bir hata oluştu',
+} as const;

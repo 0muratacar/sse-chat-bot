@@ -1,0 +1,18 @@
+export const en = {
+  VALIDATION_ERROR: 'Request validation failed',
+  INVALID_PARAMS: 'Invalid request parameters',
+  UNAUTHORIZED: 'Missing or invalid authorization header',
+  INVALID_TOKEN: 'Invalid or expired token',
+  FORBIDDEN: 'Admin access required',
+  APP_CHECK_MISSING: 'Missing Firebase App Check token',
+  APP_CHECK_INVALID: 'Invalid Firebase App Check token',
+  CHAT_NOT_FOUND: 'Chat not found',
+  FLAG_NOT_FOUND: 'Feature flag not found',
+  FLAG_EXISTS: 'Feature flag already exists',
+  USER_NOT_FOUND: 'User not found',
+  INVALID_CREDENTIALS: 'Invalid email or password',
+  CONFLICT: 'Resource already exists',
+  NOT_FOUND: 'Resource not found',
+  SERVICE_UNAVAILABLE: 'Database connection failed',
+  INTERNAL_SERVER_ERROR: 'An unexpected error occurred',
+} as const;

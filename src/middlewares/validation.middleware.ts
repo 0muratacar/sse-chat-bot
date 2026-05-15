@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodSchema, ZodError, ZodIssue } from 'zod';
+import { t } from '../i18n';
 
 export function validateBody(schema: ZodSchema) {
   return (req: Request, res: Response, next: NextFunction): void => {
@@ -11,7 +12,7 @@ export function validateBody(schema: ZodSchema) {
         res.status(400).json({
           error: {
             code: 'VALIDATION_ERROR',
-            message: 'Request validation failed',
+            message: t('VALIDATION_ERROR', req.lang),
             status: 400,
             details: (err as ZodError).issues.map((e: ZodIssue) => ({ path: e.path.join('.'), message: e.message })),
           },
@@ -33,7 +34,7 @@ export function validateParams(schema: ZodSchema) {
         res.status(400).json({
           error: {
             code: 'VALIDATION_ERROR',
-            message: 'Invalid request parameters',
+            message: t('INVALID_PARAMS', req.lang),
             status: 400,
             details: (err as ZodError).issues.map((e: ZodIssue) => ({ path: e.path.join('.'), message: e.message })),
           },

@@ -2,6 +2,7 @@ import { injectable } from 'tsyringe';
 import { Response } from 'express';
 import { UserRepository } from '../repositories/user.repository';
 import { AuthenticatedRequest } from '../types';
+import { t } from '../i18n';
 
 @injectable()
 export class UserController {
@@ -14,7 +15,7 @@ export class UserController {
 
     if (!user) {
       res.status(404).json({
-        error: { code: 'USER_NOT_FOUND', message: 'User not found', status: 404 },
+        error: { code: 'USER_NOT_FOUND', message: t('USER_NOT_FOUND', req.lang), status: 404 },
       });
       return;
     }

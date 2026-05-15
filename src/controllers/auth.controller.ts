@@ -1,6 +1,7 @@
 import { injectable } from 'tsyringe';
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
+import { t } from '../i18n';
 
 @injectable()
 export class AuthController {
@@ -13,7 +14,7 @@ export class AuthController {
 
     if (!result) {
       res.status(401).json({
-        error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password', status: 401 },
+        error: { code: 'INVALID_CREDENTIALS', message: t('INVALID_CREDENTIALS', req.lang), status: 401 },
       });
       return;
     }

@@ -1,5 +1,5 @@
 import express from 'express';
-import { loggingMiddleware, errorHandlerMiddleware } from './middlewares';
+import { loggingMiddleware, langMiddleware, errorHandlerMiddleware } from './middlewares';
 import routes from './routes';
 import { swaggerSpec } from './config/swagger';
 
@@ -8,8 +8,9 @@ const app = express();
 // Body parsing
 app.use(express.json());
 
-// Global middleware: logging (applied to all routes)
+// Global middlewares
 app.use(loggingMiddleware);
+app.use(langMiddleware);
 
 // Health check (no auth required)
 app.get('/health', (_req, res) => {

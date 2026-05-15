@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { t } from '../i18n';
 import logger from '../utils/logger';
 
 export function appCheckMiddleware(req: Request, res: Response, next: NextFunction): void {
@@ -7,7 +8,7 @@ export function appCheckMiddleware(req: Request, res: Response, next: NextFuncti
   if (!appCheckToken) {
     logger.warn('Missing App Check token', { ip: req.ip, path: req.path });
     res.status(403).json({
-      error: { code: 'APP_CHECK_FAILED', message: 'Missing Firebase App Check token', status: 403 },
+      error: { code: 'APP_CHECK_FAILED', message: t('APP_CHECK_MISSING', req.lang), status: 403 },
     });
     return;
   }
@@ -15,7 +16,7 @@ export function appCheckMiddleware(req: Request, res: Response, next: NextFuncti
   if (appCheckToken === 'invalid') {
     logger.warn('Invalid App Check token', { ip: req.ip, path: req.path });
     res.status(403).json({
-      error: { code: 'APP_CHECK_FAILED', message: 'Invalid Firebase App Check token', status: 403 },
+      error: { code: 'APP_CHECK_FAILED', message: t('APP_CHECK_INVALID', req.lang), status: 403 },
     });
     return;
   }
