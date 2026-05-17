@@ -3,17 +3,33 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useRequestOtpMutation } from '@/lib/api/authApi';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Bot, Sparkles, ArrowRight } from 'lucide-react';
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export function LoginForm() {
   const [email, setEmail] = useState('');
+  const [validationError, setValidationError] = useState('');
   const [requestOtp, { isLoading, error }] = useRequestOtpMutation();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setValidationError('');
+
+    if (!email.trim()) {
+      setValidationError(t('auth.emailRequired'));
+      return;
+    }
+    if (!EMAIL_REGEX.test(email)) {
+      setValidationError(t('auth.invalidEmail'));
+      return;
+    }
+
     try {
       await requestOtp({ email }).unwrap();
       router.push(`/verify?email=${encodeURIComponent(email)}`);
@@ -22,45 +38,46 @@ export function LoginForm() {
     }
   };
 
+  const apiError = error && 'data' in error
+    ? (error.data as { error?: { message?: string } })?.error?.message
+    : error ? t('auth.otpFailed') : null;
+
+  const displayError = validationError || apiError;
+
   return (
     <div className="space-y-8">
-      {/* Branding */}
       <div className="text-center">
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl glass glow" style={{ animation: 'float 4s ease-in-out infinite' }}>
           <Bot className="h-8 w-8 text-primary" />
         </div>
-        <h1 className="text-3xl font-bold gradient-text">AI Chat Bot</h1>
+        <h1 className="text-3xl font-bold gradient-text">{t('auth.title')}</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Yapay zeka destekli sohbet asistanınız
+          {t('auth.subtitle')}
         </p>
       </div>
 
-      {/* Login Card */}
       <div className="glass-strong rounded-2xl p-8">
         <div className="mb-6 flex items-center gap-2">
           <Sparkles className="h-4 w-4 text-accent" />
           <span className="text-xs text-muted-foreground">
-            Admin veya kullanıcı — email adresinizle giriş yapın
+            {t('auth.hint')}
           </span>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="space-y-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Email</label>
+            <label className="text-sm font-medium text-foreground">{t('auth.email')}</label>
             <Input
               type="email"
-              placeholder="you@example.com"
+              placeholder={t('auth.emailPlaceholder')}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="h-12 border-glass-border bg-glass text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20"
+              onChange={(e) => { setEmail(e.target.value); setValidationError(''); }}
+              className={`h-12 border-glass-border bg-glass text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 ${displayError ? 'border-destructive focus:border-destructive focus:ring-destructive/20' : ''}`}
             />
           </div>
 
-          {error && (
-            <p className="text-sm text-destructive">
-              {'data' in error ? (error.data as { error?: { message?: string } })?.error?.message : 'Failed to send OTP'}
-            </p>
+          {displayError && (
+            <p className="text-sm text-destructive">{displayError}</p>
           )}
 
           <Button
@@ -71,11 +88,11 @@ export function LoginForm() {
             {isLoading ? (
               <span className="flex items-center gap-2">
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                Gönderiliyor...
+                {t('auth.sending')}
               </span>
             ) : (
               <span className="flex items-center gap-2">
-                Doğrulama Kodu Gönder
+                {t('auth.sendOtp')}
                 <ArrowRight className="h-4 w-4" />
               </span>
             )}
@@ -83,9 +100,8 @@ export function LoginForm() {
         </form>
       </div>
 
-      {/* Footer */}
       <p className="text-center text-xs text-muted-foreground">
-        Güvenli OTP doğrulama ile giriş yapın
+        {t('auth.footer')}
       </p>
     </div>
   );

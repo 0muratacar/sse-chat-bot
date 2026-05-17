@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { useGetChatHistoryQuery } from '@/lib/api/chatApi';
 import { useSSEStream } from '@/hooks/useSSEStream';
+import { useTranslation } from '@/hooks/useTranslation';
 import { useAppSelector, useAppDispatch } from '@/lib/hooks';
 import { clearBuffer, clearOptimisticMessages } from '@/lib/slices/chatSlice';
 import { ChatMessage } from './ChatMessage';
@@ -18,6 +19,7 @@ interface ChatStreamProps {
 export function ChatStream({ chatId }: ChatStreamProps) {
   const { data, refetch } = useGetChatHistoryQuery(chatId);
   const { sendMessage, isStreaming } = useSSEStream(chatId);
+  const { t } = useTranslation();
   const streamingBuffer = useAppSelector((state) => state.chat.streamingBuffer);
   const optimisticMessages = useAppSelector((state) => state.chat.optimisticMessages);
   const dispatch = useAppDispatch();
@@ -53,7 +55,7 @@ export function ChatStream({ chatId }: ChatStreamProps) {
                 <Bot className="h-6 w-6 text-primary" />
               </div>
               <p className="text-muted-foreground text-sm sm:text-base">
-                Bir mesaj göndererek sohbete başlayın
+                {t('chat.empty')}
               </p>
             </div>
           )}

@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Bot, User, AlertCircle } from 'lucide-react';
 
 interface ChatMessageProps {
@@ -8,6 +9,7 @@ interface ChatMessageProps {
 }
 
 export function ChatMessage({ role, content, failed }: ChatMessageProps) {
+  const { t } = useTranslation();
   return (
     <div className={cn('flex w-full gap-2 sm:gap-3', role === 'user' ? 'justify-end' : 'justify-start')}>
       {role === 'assistant' && (
@@ -30,8 +32,8 @@ export function ChatMessage({ role, content, failed }: ChatMessageProps) {
         {failed && (
           <div className="group relative flex items-center gap-1 text-red-500">
             <AlertCircle className="h-4 w-4" />
-            <span className="absolute bottom-full right-0 mb-1 hidden w-max max-w-[200px] rounded-lg bg-red-500/90 px-3 py-1.5 text-xs text-white group-hover:block">
-              Geçici bir sorun nedeniyle mesajınız gönderilemedi. Daha sonra tekrar deneyin.
+            <span className="absolute bottom-full right-0 mb-1 hidden w-max max-w-[220px] rounded-lg bg-red-500/90 px-3 py-1.5 text-xs text-white group-hover:block">
+              {t('chat.failed')}
             </span>
           </div>
         )}
