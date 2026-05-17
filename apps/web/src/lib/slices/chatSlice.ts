@@ -1,15 +1,24 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+export interface OptimisticMessage {
+  id: string;
+  content: string;
+  role: 'user';
+  failed?: boolean;
+}
+
 interface ChatState {
   activeChatId: string | null;
   streamingBuffer: string;
   isStreaming: boolean;
+  optimisticMessages: OptimisticMessage[];
 }
 
 const initialState: ChatState = {
   activeChatId: null,
   streamingBuffer: '',
   isStreaming: false,
+  optimisticMessages: [],
 };
 
 export const chatSlice = createSlice({
@@ -18,6 +27,21 @@ export const chatSlice = createSlice({
   reducers: {
     setActiveChat: (state, action: PayloadAction<string | null>) => {
       state.activeChatId = action.payload;
+      state.optimisticMessages = [];
+    },
+    addOptimisticMessage: (state, action: PayloadAction<{ id: string; content: string }>) => {
+      state.optimisticMessages.push({
+        id: action.payload.id,
+        content: action.payload.content,
+        role: 'user',
+      });
+    },
+    markMessageFailed: (state, action: PayloadAction<string>) => {
+      const msg = state.optimisticMessages.find((m) => m.id === action.payload);
+      if (msg) msg.failed = true;
+    },
+    clearOptimisticMessages: (state) => {
+      state.optimisticMessages = [];
     },
     startStreaming: (state) => {
       state.isStreaming = true;
@@ -35,4 +59,13 @@ export const chatSlice = createSlice({
   },
 });
 
-export const { setActiveChat, startStreaming, appendToBuffer, finishStreaming, clearBuffer } = chatSlice.actions;
+export const {
+  setActiveChat,
+  addOptimisticMessage,
+  markMessageFailed,
+  clearOptimisticMessages,
+  startStreaming,
+  appendToBuffer,
+  finishStreaming,
+  clearBuffer,
+} = chatSlice.actions;

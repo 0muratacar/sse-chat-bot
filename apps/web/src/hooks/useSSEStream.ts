@@ -2,7 +2,13 @@
 
 import { useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '@/lib/hooks';
-import { startStreaming, appendToBuffer, finishStreaming } from '@/lib/slices/chatSlice';
+import {
+  startStreaming,
+  appendToBuffer,
+  finishStreaming,
+  addOptimisticMessage,
+  markMessageFailed,
+} from '@/lib/slices/chatSlice';
 
 export function useSSEStream(chatId: string) {
   const dispatch = useAppDispatch();
@@ -11,6 +17,8 @@ export function useSSEStream(chatId: string) {
   const isStreaming = useAppSelector((state) => state.chat.isStreaming);
 
   const sendMessage = useCallback(async (content: string) => {
+    const optimisticId = `opt-${Date.now()}`;
+    dispatch(addOptimisticMessage({ id: optimisticId, content }));
     dispatch(startStreaming());
 
     try {
@@ -26,6 +34,7 @@ export function useSSEStream(chatId: string) {
       });
 
       if (!response.ok) {
+        dispatch(markMessageFailed(optimisticId));
         dispatch(finishStreaming());
         return;
       }
@@ -69,6 +78,7 @@ export function useSSEStream(chatId: string) {
         dispatch(finishStreaming());
       }
     } catch {
+      dispatch(markMessageFailed(optimisticId));
       dispatch(finishStreaming());
     }
   }, [chatId, token, lang, dispatch]);
