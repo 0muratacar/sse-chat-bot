@@ -13,6 +13,9 @@ RUN pnpm install --frozen-lockfile --filter @sse-chat-bot/web...
 COPY packages/shared ./packages/shared
 COPY apps/web ./apps/web
 
+ARG API_URL=http://localhost:3000
+ENV API_URL=${API_URL}
+
 WORKDIR /app/apps/web
 RUN pnpm build
 
