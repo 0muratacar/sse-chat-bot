@@ -2,8 +2,10 @@ FROM node:24-alpine AS builder
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY tsconfig.json ./
 COPY prisma ./prisma/
@@ -12,14 +14,16 @@ COPY prisma.config.ts ./
 RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma generate
 
 COPY src ./src/
-RUN npm run build
+RUN pnpm run build
 
 FROM node:24-alpine AS runner
 
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm ci --omit=dev
+RUN corepack enable
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --prod --frozen-lockfile
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma

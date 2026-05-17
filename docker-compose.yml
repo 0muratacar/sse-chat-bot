@@ -11,8 +11,9 @@ services:
       timeout: 5s
       retries: 5
 
-  app:
-    build: .
+  api:
+    build:
+      context: ./apps/api
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
@@ -25,6 +26,16 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+
+  web:
+    build:
+      context: ./apps/web
+    ports:
+      - "3001:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api:3000
+    depends_on:
+      - api
 
 volumes:
   redis_data:
