@@ -16,6 +16,7 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
+      transformResponse: (response: { data: AuthResponse }) => response.data,
     }),
   }),
 });
