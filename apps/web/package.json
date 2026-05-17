@@ -1,0 +1,33 @@
+{
+  "name": "@sse-chat-bot/web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3001",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sse-chat-bot/shared": "workspace:*",
+    "@reduxjs/toolkit": "^2.6.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-redux": "^9.2.0",
+    "next": "^15.3.2",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.3.0",
+    "class-variance-authority": "^0.7.1",
+    "lucide-react": "^0.511.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.7.0",
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.6",
+    "typescript": "^6.0.3",
+    "tailwindcss": "^4",
+    "@tailwindcss/postcss": "^4",
+    "postcss": "^8"
+  }
+}
