@@ -1,9 +1,15 @@
 import express from 'express';
+import cors from 'cors';
 import { loggingMiddleware, langMiddleware, errorHandlerMiddleware } from './middlewares';
 import routes from './routes';
 import { swaggerSpec } from './config/swagger';
 
 const app = express();
+
+app.use(cors({
+  origin: true,
+  credentials: true,
+}));
 
 // Body parsing
 app.use(express.json());
