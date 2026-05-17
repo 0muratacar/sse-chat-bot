@@ -57,10 +57,10 @@ export function useSSEStream(chatId: string) {
           for (const line of lines) {
             if (line.startsWith('data: ')) {
               try {
-                const data = JSON.parse(line.slice(6));
-                if (data.type === 'content') {
-                  dispatch(appendToBuffer(data.content));
-                } else if (data.type === 'done') {
+                const event = JSON.parse(line.slice(6));
+                if (event.type === 'content') {
+                  dispatch(appendToBuffer(event.data.content));
+                } else if (event.type === 'done') {
                   dispatch(finishStreaming());
                 }
               } catch {
