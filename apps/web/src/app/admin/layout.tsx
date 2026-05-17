@@ -9,7 +9,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!isAuthenticated) return null;
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-background">
       <AdminNav />
       <main className="flex-1 overflow-auto p-6">{children}</main>
     </div>
