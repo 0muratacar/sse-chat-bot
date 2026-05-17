@@ -1,3 +1,19 @@
+## Monorepo Structure
+
+- **Root:** Turborepo + pnpm workspaces
+- **apps/api:** Express backend (original project)
+- **apps/web:** Next.js 15 frontend (App Router, shadcn/ui, RTK)
+- **packages/shared:** Shared TypeScript types and constants
+
+### Running
+
+```bash
+pnpm dev          # Runs both api and web concurrently
+pnpm build        # Builds all packages
+pnpm --filter @sse-chat-bot/api dev    # Backend only
+pnpm --filter @sse-chat-bot/web dev    # Frontend only
+```
+
 # Project Rules
 
 ## Reference Documents
