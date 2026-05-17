@@ -87,6 +87,16 @@ export const adminRoutes: RouteDefinition[] = [
     },
   },
   {
+    path: '/users',
+    method: 'get',
+    controller: 'adminController.getUsers',
+    config: {
+      description: 'List all users',
+      middlewares: ['appCheck', 'auth', 'admin'],
+      tags: ['admin', 'user'],
+    },
+  },
+  {
     path: '/users/:id/tier',
     method: 'put',
     controller: 'adminController.updateUserTier',

@@ -136,6 +136,11 @@ export class AdminController {
     }
   }
 
+  async getUsers(_req: Request, res: Response): Promise<void> {
+    const users = await this.userRepository.findAll();
+    res.json({ data: users });
+  }
+
   async updateUserTier(req: Request, res: Response): Promise<void> {
     const userId = req.params.id as string;
     const { tier } = req.body;

@@ -26,6 +26,13 @@ export class UserRepository {
     return this.prisma.user.update({ where: { id }, data: { name } });
   }
 
+  async findAll() {
+    return this.prisma.user.findMany({
+      select: { id: true, email: true, name: true, role: true, tier: true, createdAt: true, updatedAt: true },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
   async updateTier(id: string, tier: Tier): Promise<User> {
     return this.prisma.user.update({ where: { id }, data: { tier } });
   }
