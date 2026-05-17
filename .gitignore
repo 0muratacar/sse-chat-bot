@@ -10,5 +10,9 @@ dist/
 # pnpm
 .pnpm-store/
 
+# Next.js
+.next/
+*.tsbuildinfo
+
 # Task document (private)
 docs/sse-chat-task.pdf
