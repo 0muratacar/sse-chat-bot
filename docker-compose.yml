@@ -13,7 +13,8 @@ services:
 
   api:
     build:
-      context: ./apps/api
+      context: .
+      dockerfile: apps/api/Dockerfile
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
@@ -29,7 +30,8 @@ services:
 
   web:
     build:
-      context: ./apps/web
+      context: .
+      dockerfile: apps/web/Dockerfile
     ports:
       - "3001:3000"
     environment:

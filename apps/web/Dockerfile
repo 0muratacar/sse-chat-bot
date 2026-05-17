@@ -4,10 +4,16 @@ WORKDIR /app
 
 RUN corepack enable
 
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY apps/web/package.json ./apps/web/
+COPY packages/shared/package.json ./packages/shared/
 
-COPY . .
+RUN pnpm install --frozen-lockfile --filter @sse-chat-bot/web...
+
+COPY packages/shared ./packages/shared
+COPY apps/web ./apps/web
+
+WORKDIR /app/apps/web
 RUN pnpm build
 
 FROM node:24-alpine AS runner
@@ -16,9 +22,9 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
+COPY --from=builder /app/apps/web/.next/standalone ./
+COPY --from=builder /app/apps/web/.next/static ./.next/static
+COPY --from=builder /app/apps/web/public ./public
 
 EXPOSE 3000
 
