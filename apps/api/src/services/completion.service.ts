@@ -50,6 +50,9 @@ export class CompletionService {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.socket?.setNoDelay(true);
+    res.flushHeaders();
 
     this.sendEvent(res, { type: 'thinking', data: { message: 'Processing your request...' } });
 
@@ -127,6 +130,9 @@ export class CompletionService {
 
   private sendEvent(res: Response, event: SSEEvent): void {
     res.write(`data: ${JSON.stringify(event)}\n\n`);
+    if (typeof (res as unknown as { flush?: () => void }).flush === 'function') {
+      (res as unknown as { flush: () => void }).flush();
+    }
   }
 
   private executeMockTool(message: string): object | null {
