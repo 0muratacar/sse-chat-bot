@@ -10,6 +10,8 @@ import {
   markMessageFailed,
 } from '@/lib/slices/chatSlice';
 
+const SSE_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
 export function useSSEStream(chatId: string) {
   const dispatch = useAppDispatch();
   const token = useAppSelector((state) => state.auth.token);
@@ -22,7 +24,7 @@ export function useSSEStream(chatId: string) {
     dispatch(startStreaming());
 
     try {
-      const response = await fetch(`/api/chats/${chatId}/completion?lang=${lang}`, {
+      const response = await fetch(`${SSE_BASE_URL}/api/chats/${chatId}/completion?lang=${lang}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
