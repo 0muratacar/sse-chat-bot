@@ -7,13 +7,14 @@ import { startStreaming, appendToBuffer, finishStreaming } from '@/lib/slices/ch
 export function useSSEStream(chatId: string) {
   const dispatch = useAppDispatch();
   const token = useAppSelector((state) => state.auth.token);
+  const lang = useAppSelector((state) => state.lang.lang);
   const isStreaming = useAppSelector((state) => state.chat.isStreaming);
 
   const sendMessage = useCallback(async (content: string) => {
     dispatch(startStreaming());
 
     try {
-      const response = await fetch(`/api/chats/${chatId}/completion`, {
+      const response = await fetch(`/api/chats/${chatId}/completion?lang=${lang}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -70,7 +71,7 @@ export function useSSEStream(chatId: string) {
     } catch {
       dispatch(finishStreaming());
     }
-  }, [chatId, token, dispatch]);
+  }, [chatId, token, lang, dispatch]);
 
   return { sendMessage, isStreaming };
 }

@@ -22,7 +22,7 @@ export function ChatStream({ chatId }: ChatStreamProps) {
   const dispatch = useAppDispatch();
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const messages: Message[] = data?.data || [];
+  const messages: Message[] = data || [];
 
   useEffect(() => {
     if (scrollRef.current) {

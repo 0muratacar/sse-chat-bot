@@ -1,18 +1,20 @@
 import { injectable } from 'tsyringe';
 import crypto from 'crypto';
 import { RedisService } from './redis.service';
+import config from '../config';
 
 const OTP_TTL = 300; // 5 minutes
 const RATE_LIMIT_WINDOW = 30; // 30 seconds
 const MAX_ATTEMPTS = 3;
 const BLOCK_DURATION = 60; // 1 minute
+const LOCAL_OTP = '123456';
 
 @injectable()
 export class OtpService {
   constructor(private redis: RedisService) {}
 
   async generate(email: string): Promise<string> {
-    const otp = crypto.randomInt(100000, 999999).toString();
+    const otp = config.get('local') ? LOCAL_OTP : crypto.randomInt(100000, 999999).toString();
     await this.redis.set(`otp:${email}`, otp, OTP_TTL);
     return otp;
   }

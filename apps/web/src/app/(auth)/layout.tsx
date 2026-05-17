@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAppSelector } from '@/lib/hooks';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -22,6 +23,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <div className="gradient-bg relative flex min-h-screen items-center justify-center overflow-hidden">
+      <div className="absolute right-4 top-4 z-20">
+        <LanguageSwitcher />
+      </div>
+
       {/* Floating orbs */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/4 top-1/4 h-64 w-64 rounded-full bg-primary/20 blur-[100px]" style={{ animation: 'float 6s ease-in-out infinite' }} />

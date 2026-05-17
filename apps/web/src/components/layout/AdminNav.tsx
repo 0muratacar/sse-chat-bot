@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { LayoutDashboard, Flag, Users, LogOut, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -30,8 +31,9 @@ export function AdminNav() {
 
   return (
     <div className="flex h-full w-56 flex-col border-r bg-neutral-50">
-      <div className="p-4">
+      <div className="flex items-center justify-between p-4">
         <h1 className="text-sm font-bold">Admin Panel</h1>
+        <LanguageSwitcher />
       </div>
       <Separator />
       <nav className="flex-1 space-y-1 p-2">

@@ -3,6 +3,7 @@ import 'dotenv/config';
 interface AppConfig {
   nodeEnv: string;
   port: number;
+  local: boolean;
   databaseUrl: string;
   redisUrl: string;
   jwtSecret: string;
@@ -23,6 +24,7 @@ class Config {
     this.config = {
       nodeEnv: process.env.NODE_ENV || 'development',
       port: parseInt(process.env.PORT || '3000', 10),
+      local: process.env.LOCAL === 'true',
       databaseUrl: this.requireEnv('DATABASE_URL'),
       redisUrl: process.env.REDIS_URL || 'redis://localhost:6379',
       jwtSecret: process.env.JWT_SECRET || 'dev-secret-key',

@@ -13,10 +13,12 @@ export const chatApi = baseApi.injectEndpoints({
         method: 'POST',
         body,
       }),
+      transformResponse: (response: { data: Chat }) => response.data,
       invalidatesTags: ['Chat'],
     }),
-    getChatHistory: builder.query<{ data: Message[] }, string>({
+    getChatHistory: builder.query<Message[], string>({
       query: (chatId) => `/chats/${chatId}/history`,
+      transformResponse: (response: { data: { messages: Message[] } }) => response.data.messages,
     }),
   }),
 });

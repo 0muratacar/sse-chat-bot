@@ -15,7 +15,9 @@ export class AuthService {
 
   async requestOtp(email: string): Promise<void> {
     const otp = await this.otpService.generate(email);
-    await this.mailService.sendOtp(email, otp);
+    if (!config.get('local')) {
+      await this.mailService.sendOtp(email, otp);
+    }
   }
 
   async verifyOtp(email: string, otp: string) {

@@ -5,6 +5,7 @@ import { ChatSidebar } from './ChatSidebar';
 import { useAuth } from '@/hooks/useAuth';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 
 export function ChatLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -26,7 +27,7 @@ export function ChatLayout({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <div className="flex flex-1 flex-col min-w-0">
         {/* Top bar */}
-        <div className="flex h-12 items-center border-b border-border px-4">
+        <div className="flex h-12 items-center justify-between border-b border-border px-4">
           <Button
             variant="ghost"
             size="icon"
@@ -39,6 +40,7 @@ export function ChatLayout({ children }: { children: React.ReactNode }) {
               <PanelLeftOpen className="h-5 w-5" />
             )}
           </Button>
+          <LanguageSwitcher />
         </div>
 
         {/* Chat content */}
