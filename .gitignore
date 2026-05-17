@@ -4,5 +4,11 @@ dist/
 .env.local
 *.log
 
+# Turborepo
+.turbo/
+
+# pnpm
+.pnpm-store/
+
 # Task document (private)
 docs/sse-chat-task.pdf

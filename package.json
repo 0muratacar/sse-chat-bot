@@ -1,46 +1,15 @@
 {
-  "name": "sse-chat-bot-be",
+  "name": "sse-chat-bot",
   "version": "1.0.0",
-  "main": "dist/server.js",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
   "scripts": {
-    "dev": "nodemon",
-    "build": "tsc",
-    "start": "node dist/server.js",
-    "test": "jest",
-    "test:coverage": "jest --coverage",
-    "generate-token": "ts-node src/utils/generate-token.ts"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "AI Chat System Backend with Feature Flagging",
-  "dependencies": {
-    "@google/generative-ai": "^0.24.1",
-    "@prisma/client": "^6.19.3",
-    "bcrypt": "^6.0.0",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "ioredis": "^5.10.1",
-    "jsonwebtoken": "^9.0.3",
-    "nodemailer": "^8.0.7",
-    "prisma": "^6.19.3",
-    "reflect-metadata": "^0.2.2",
-    "tsyringe": "^4.10.0",
-    "winston": "^3.19.0",
-    "zod": "^4.4.3"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check"
   },
   "devDependencies": {
-    "@types/bcrypt": "^6.0.0",
-    "@types/express": "^5.0.6",
-    "@types/ioredis": "^4.28.10",
-    "@types/jest": "^30.0.0",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^25.7.0",
-    "@types/nodemailer": "^8.0.0",
-    "jest": "^29.7.0",
-    "nodemon": "^3.1.14",
-    "ts-jest": "^29.4.9",
-    "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "turbo": "^2.5.0"
   }
 }
